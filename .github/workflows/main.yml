@@ -28,8 +28,8 @@
         }
       ]
     },
-    "macos": {
-      "runs-on": "macos-latest",
+    "macos-a": {
+      "runs-on": "macos-14",
       "steps": [
         {
           "uses": "actions/checkout@v4"
@@ -50,6 +50,33 @@
           "uses": "actions/upload-artifact@v4",
           "with": {
             "name": "PokeChord-macOS-VST3",
+            "path": "build-poke/PokeChord_artefacts/Release/VST3"
+          }
+        }
+      ]
+    },
+    "macos-b": {
+      "runs-on": "macos-15-intel",
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "name": "Configure PokeChord",
+          "run": "cmake -S PokeChord -B build-poke -G Xcode '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0"
+        },
+        {
+          "name": "Build PokeChord",
+          "run": "cmake --build build-poke --config Release --parallel"
+        },
+        {
+          "name": "Sign PokeChord",
+          "run": "codesign --force --deep -s - build-poke/PokeChord_artefacts/Release/VST3/PokeChord.vst3"
+        },
+        {
+          "uses": "actions/upload-artifact@v4",
+          "with": {
+            "name": "PokeChord-macOS-Intel-VST3",
             "path": "build-poke/PokeChord_artefacts/Release/VST3"
           }
         }
